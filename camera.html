@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auto Camera</title>
+</head>
+<body>
+    <video id="video" autoplay playsinline style="width: 100%;"></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    
+    <script>
+        async function startCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" }
+            });
+            document.getElementById("video").srcObject = stream;
+        }
+
+        function capturePhoto() {
+            let video = document.getElementById("video");
+            let canvas = document.getElementById("canvas");
+            let context = canvas.getContext("2d");
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            let imageData = canvas.toDataURL("image/png");  
+            window.ReactNativeWebView.postMessage(imageData); // Send to Thunkable
+        }
+
+        startCamera();
+
+        // Capture every 5 seconds
+        setInterval(capturePhoto, 5000);
+    </script>
+</body>
+</html>
